@@ -1,0 +1,254 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;550;600;750;800&family=Space+Grotesk:wght@400;550;600;750&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer utilities {
+  /* Hide scrollbars for focused custom dialog views */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Frosted Glass Theme Mesh Background */
+.mesh-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background: 
+    radial-gradient(circle at 15% 25%, rgba(99, 102, 241, 0.12) 0%, transparent 45%), 
+    radial-gradient(circle at 85% 65%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 50% 10%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+}
+
+/* Frosted Glass Styles Overrides */
+.theme-frosted-glass {
+  background: linear-gradient(135deg, #090e1a 0%, #110e2f 100%) !important;
+}
+
+.theme-frosted-glass article {
+  background: rgba(255, 255, 255, 0.02) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.theme-frosted-glass h2 {
+  color: #a5b4fc !important; /* light indigo */
+  border-color: rgba(99, 102, 241, 0.3) !important;
+}
+.theme-frosted-glass h2 svg {
+  color: #a5b4fc !important;
+}
+
+.theme-frosted-glass h1 {
+  color: #ffffff !important;
+}
+
+.theme-frosted-glass h3 {
+  color: #f8fafc !important;
+}
+
+.theme-frosted-glass p, 
+.theme-frosted-glass div.text-gray-800, 
+.theme-frosted-glass span.text-gray-700, 
+.theme-frosted-glass span.text-gray-800,
+.theme-frosted-glass span.font-semibold.text-gray-700,
+.theme-frosted-glass .text-gray-800 {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.theme-frosted-glass .text-gray-550,
+.theme-frosted-glass .text-gray-500, 
+.theme-frosted-glass .text-gray-400,
+.theme-frosted-glass span.font-bold.text-gray-500,
+.theme-frosted-glass span.font-bold.text-gray-555 {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Specific background panels inside CV */
+.theme-frosted-glass .bg-slate-100,
+.theme-frosted-glass .bg-gray-100, 
+.theme-frosted-glass .bg-gray-50,
+.theme-frosted-glass .bg-indigo-50\/50,
+.theme-frosted-glass .bg-emerald-50\/50,
+.theme-frosted-glass .bg-indigo-50,
+.theme-frosted-glass .bg-blue-50 {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.theme-frosted-glass .border-gray-200,
+.theme-frosted-glass .border-gray-150,
+.theme-frosted-glass .border-gray-300 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.theme-frosted-glass .bg-white {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  color: white !important;
+}
+
+.theme-frosted-glass .text-indigo-900,
+.theme-frosted-glass .text-indigo-600,
+.theme-frosted-glass .text-emerald-900,
+.theme-frosted-glass .text-emerald-600,
+.theme-frosted-glass .text-amber-900 {
+  color: #cbd5e1 !important;
+}
+
+/* Badge tags/pills */
+.theme-frosted-glass .bg-gray-50.text-gray-700 {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.theme-frosted-glass .bg-sky-50,
+.theme-frosted-glass .bg-emerald-50,
+.theme-frosted-glass .bg-purple-50 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  color: #f1f5f9 !important;
+}
+
+/* Custom specific layout overrides */
+.theme-frosted-glass .bg-indigo-50\/50,
+.theme-frosted-glass .bg-emerald-50\/50 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+.theme-frosted-glass .text-indigo-600,
+.theme-frosted-glass .text-emerald-600 {
+  color: #a5b4fc !important;
+}
+
+.theme-frosted-glass .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+  border-color: rgba(245, 158, 11, 0.2) !important;
+  color: #ffedd5 !important;
+}
+
+.theme-frosted-glass .text-\[\#1a5f7a\] {
+  color: #a5b4fc !important;
+}
+
+.theme-frosted-glass a.text-\[\#1a5f7a\],
+.theme-frosted-glass a.text-blue-600 {
+  color: #a5b4fc !important;
+}
+.theme-frosted-glass a.text-\[\#1a5f7a\]:hover,
+.theme-frosted-glass a.text-blue-600:hover {
+  color: #c7d2fe !important;
+  text-decoration-color: #c7d2fe !important;
+}
+
+.theme-frosted-glass .border-b-2.border-\[\#1a5f7a\] {
+  border-color: rgba(129, 140, 248, 0.3) !important;
+}
+
+/* Interactive elements */
+.theme-frosted-glass .group:hover {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.theme-frosted-glass .border-gray-150 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.theme-frosted-glass .experience-role {
+  color: #e4e9f3 !important;
+}
+
+.theme-frosted-glass .text-gray-900 {
+  color: #f8fafc !important;
+}
+
+/* Print CSS variables & page adjustments */
+@media print {
+  @page {
+    size: letter;
+    margin: 15mm 15mm 15mm 15mm;
+  }
+  
+  body, .theme-frosted-glass {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #111827 !important;
+    font-size: 12px !important;
+  }
+  
+  /* Force system backdrop colors to print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force glass cards back to fully solid white layouts for printing */
+  .theme-frosted-glass article {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .theme-frosted-glass h1, .theme-frosted-glass h3 {
+    color: #111827 !important;
+  }
+
+  .theme-frosted-glass h2, .theme-frosted-glass h2 svg {
+    color: #1a5f7a !important;
+    border-color: #1a5f7a !important;
+  }
+
+  .theme-frosted-glass p,
+  .theme-frosted-glass div,
+  .theme-frosted-glass span {
+    color: #374151 !important;
+  }
+
+  /* Hide interactives in paper CV */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Make containers fit exactly to standard document scales */
+  #cv-main-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Prevent page breaks inside experiences or projects cards */
+  #experiencia-profesional > div > div,
+  #proyectos-portfolio > div > div,
+  #congresos-capacitaciones > div > div {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  /* Set exact print brand highlights */
+  h1, h2, h3, h4 {
+    color: #1a5f7a !important;
+  }
+}
+
+

@@ -1,0 +1,8 @@
+{
+  "name": "Remix3: Currículum Interactivo - José Manuel Díaz Esqueda",
+  "description": "Una versión interactiva, moderna y totalmente editable del currículum vitae de José Manuel Díaz Esqueda",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
