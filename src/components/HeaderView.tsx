@@ -247,43 +247,37 @@ export default function HeaderView({
           </div>
 
           {/* Subgrid of personal attributes */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 text-xs">
-            <div className="p-2 border border-gray-150 rounded-lg">
-              <span className="block font-bold text-gray-550 text-[10px] uppercase">Edad</span>
-              <span className="font-semibold text-gray-800">{info.edad}</span>
-            </div>
-            <div className="p-2 border border-gray-150 rounded-lg col-span-2">
-              <span className="block font-bold text-gray-550 text-[10px] uppercase">Nacimiento</span>
-              <span className="font-semibold text-gray-800 line-clamp-1">{info.nacimiento}</span>
-            </div>
-            <div className="p-2 border border-gray-150 rounded-lg">
-              <span className="block font-bold text-gray-550 text-[10px] uppercase">Estado Civil</span>
-              <span className="font-semibold text-gray-800">{info.estadoCivil}</span>
-            </div>
-            <div className="p-2 border border-gray-150 rounded-lg">
-              <span className="block font-bold text-gray-550 text-[10px] uppercase">Cédula Prof.</span>
-              <span className="font-bold text-[#1a5f7a]">{info.cedulaProfesional}</span>
+          <div className="space-y-3 text-xs">
+            {/* Nacimiento, Cédula Prof. y Edad */}
+            <div className="grid grid-cols-2 sm:grid-cols-12 gap-3">
+              <div className="p-2 border border-gray-150 rounded-lg col-span-2 sm:col-span-5">
+                <span className="block font-bold text-gray-550 text-[10px] uppercase">Nacimiento</span>
+                <span className="font-semibold text-gray-800 line-clamp-1">{info.nacimiento}</span>
+              </div>
+              <div className="p-2 border border-gray-150 rounded-lg col-span-1 sm:col-span-4">
+                <span className="block font-bold text-gray-550 text-[10px] uppercase">Cédula Prof.</span>
+                <span className="font-bold text-[#1a5f7a] truncate block">{info.cedulaProfesional}</span>
+              </div>
+              <div className="p-2 border border-gray-150 rounded-lg col-span-1 sm:col-span-3">
+                <span className="block font-bold text-gray-550 text-[10px] uppercase">Edad</span>
+                <span className="font-semibold text-gray-800 truncate block">{info.edad}</span>
+              </div>
             </div>
 
-            <div className="p-2 border border-gray-150 rounded-lg">
-              <span className="block font-bold text-gray-550 text-[10px] uppercase">CURP</span>
-              <span className="font-semibold text-gray-800 tracking-wider font-mono text-[11px]">{info.curp}</span>
-            </div>
-            <div className="p-2 border border-gray-150 rounded-lg">
-              <span className="block font-bold text-gray-550 text-[10px] uppercase">RFC</span>
-              <span className="font-semibold text-gray-800 tracking-wider font-mono text-[11px]">{info.rfc}</span>
-            </div>
-            <div className="p-2 border border-gray-150 rounded-lg">
-              <span className="block font-bold text-gray-550 text-[10px] uppercase">Pasaporte</span>
-              <span className="font-semibold text-gray-800">{info.pasaporte}</span>
-            </div>
-            <div className="p-2 border border-gray-150 rounded-lg">
-              <span className="block font-bold text-gray-550 text-[10px] uppercase">Visa Americana</span>
-              <span className="font-semibold text-gray-800">{info.visaAmericana}</span>
-            </div>
-            <div className="p-2 border border-gray-150 rounded-lg">
-              <span className="block font-bold text-gray-550 text-[10px] uppercase">Licencia</span>
-              <span className="font-semibold text-gray-800">{info.licenciaChofer}</span>
+            {/* Documentos: Pasaporte, Visa y Licencia en una sola línea en smartphone */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="p-1.5 md:p-2 border border-gray-150 rounded-lg text-center sm:text-left">
+                <span className="block font-bold text-gray-550 text-[8px] sm:text-[10px] uppercase tracking-tight truncate">Pasaporte</span>
+                <span className="font-semibold text-gray-800 text-[10px] sm:text-xs truncate block">{info.pasaporte}</span>
+              </div>
+              <div className="p-1.5 md:p-2 border border-gray-150 rounded-lg text-center sm:text-left">
+                <span className="block font-bold text-gray-550 text-[8px] sm:text-[10px] uppercase tracking-tight truncate">Visa Americana</span>
+                <span className="font-semibold text-gray-800 text-[10px] sm:text-xs truncate block">{info.visaAmericana}</span>
+              </div>
+              <div className="p-1.5 md:p-2 border border-gray-150 rounded-lg text-center sm:text-left">
+                <span className="block font-bold text-gray-550 text-[8px] sm:text-[10px] uppercase tracking-tight truncate">Licencia</span>
+                <span className="font-semibold text-gray-800 text-[10px] sm:text-xs truncate block">{info.licenciaChofer}</span>
+              </div>
             </div>
           </div>
 

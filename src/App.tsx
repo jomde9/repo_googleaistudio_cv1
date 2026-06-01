@@ -495,25 +495,10 @@ export default function App() {
       {activeTheme === 'frostedGlass' && <div className="mesh-bg" />}
       
       {/* 1. Global Admin and Settings Header Toolbar (Hidden during Print) */}
-      <nav id="cv-editorial-navbar" className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-md px-4 py-2 print:hidden transition-all">
-        <div id="nav-container" className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Quick instructions and project brand */}
-          <div className="flex items-center gap-2">
-            <div className="p-1 px-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
-              <Sparkles className="w-4 h-4 animate-pulse" />
-            </div>
-            <div className="text-left">
-              <span className="font-extrabold text-gray-900 text-sm block">
-                José Manuel Díaz Esqueda
-              </span>
-              <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider block">
-                Ingeniero en Electrónica
-              </span>
-            </div>
-          </div>
-
+      <nav id="cv-editorial-navbar" className="sticky top-0 z-40 bg-blue-50/95 backdrop-blur-md border-b border-blue-200 shadow-md px-4 py-2 print:hidden transition-all">
+        <div id="nav-container" className="max-w-4xl mx-auto flex items-center justify-center gap-4">
           {/* Interactive contacts with clicking motivation hand indicators */}
-          <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-end">
+          <div className="flex items-center gap-3 justify-center">
             {/* WhatsApp Contact */}
             <div id="nav-whatsapp-block" className="flex items-center gap-2 bg-emerald-50/80 border border-emerald-100 hover:bg-emerald-50/50 px-2.5 py-1 rounded-xl shadow-xs transition-all">
               <div className="relative">
@@ -536,10 +521,9 @@ export default function App() {
                 <div className="absolute -bottom-1 -left-1.5 animate-bounce pointer-events-none z-20">
                   <svg 
                     viewBox="0 0 24 24" 
-                    className="w-3.5 h-3.5 text-orange-500 fill-current drop-shadow-md select-none"
+                    className="w-3.5 h-3.5 text-blue-600 fill-current drop-shadow-md select-none"
                   >
-                    <path d="M10 21.5c-2.48 0-4.5-2.02-4.5-4.5l.02-6.52c0-.55.45-1 1-1h1c.55 0 1 .45 1 1V17c0 .55.45 1 1 1s1-.45 1-1V5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5V17c0 .55.45 1 1 1s1-.45 1-1V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5V17c0 .55.45 1 1 1s1-.45 1-1v-4.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5V17c0 2.48-2.02 4.5-4.5 4.5h-9z" />
-                    <path d="M6 3.5A2.5 2.5 0 018.5 6m2.5-4.5A4.5 4.5 0 0115.5 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                    <path d="M11 2c-.83 0-1.5.67-1.5 1.5v8.27l-1.92-.96c-.66-.33-1.47-.13-1.91.46-.48.63-.35 1.52.3 2.01l4.97 3.73c2.03 1.52 4.06 2.49 6.2 2.49 3.23 0 5.86-2.63 5.86-5.86v-3.64c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v1h-1v-2c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v2h-1v-4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v4h-1V3.5C12.5 2.67 11.83 2 11 2z" />
                   </svg>
                 </div>
               </div>
@@ -576,10 +560,9 @@ export default function App() {
                 <div className="absolute -bottom-1 -left-1.5 animate-bounce pointer-events-none z-20">
                   <svg 
                     viewBox="0 0 24 24" 
-                    className="w-3.5 h-3.5 text-orange-500 fill-current drop-shadow-md select-none"
+                    className="w-3.5 h-3.5 text-blue-600 fill-current drop-shadow-md select-none"
                   >
-                    <path d="M10 21.5c-2.48 0-4.5-2.02-4.5-4.5l.02-6.52c0-.55.45-1 1-1h1c.55 0 1 .45 1 1V17c0 .55.45 1 1 1s1-.45 1-1V5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5V17c0 .55.45 1 1 1s1-.45 1-1V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5V17c0 .55.45 1 1 1s1-.45 1-1v-4.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5V17c0 2.48-2.02 4.5-4.5 4.5h-9z" />
-                    <path d="M6 3.5A2.5 2.5 0 018.5 6m2.5-4.5A4.5 4.5 0 0115.5 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                    <path d="M11 2c-.83 0-1.5.67-1.5 1.5v8.27l-1.92-.96c-.66-.33-1.47-.13-1.91.46-.48.63-.35 1.52.3 2.01l4.97 3.73c2.03 1.52 4.06 2.49 6.2 2.49 3.23 0 5.86-2.63 5.86-5.86v-3.64c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v1h-1v-2c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v2h-1v-4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v4h-1V3.5C12.5 2.67 11.83 2 11 2z" />
                   </svg>
                 </div>
               </div>
