@@ -181,14 +181,17 @@ export default function HeaderView({
           </div>
 
           {/* Core Contacts row matching original details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200">
+          <div className="bg-gray-50 p-3 rounded-xl border border-gray-200">
             <div className="flex items-center gap-2 text-xs text-gray-800">
               <MapPin className="w-4 h-4 text-[#1a5f7a] flex-shrink-0" />
               <div>
                 <span className="block font-bold text-gray-500 uppercase text-[9px]">Domicilio</span>
-                <span className="font-medium">{info.domicilio}</span>
+                <span className="font-semibold text-gray-800">{info.domicilio}</span>
               </div>
             </div>
+          </div>
+
+          <div className="hidden">
 
             <div className="flex items-center gap-2 text-xs text-gray-800">
               <a 
