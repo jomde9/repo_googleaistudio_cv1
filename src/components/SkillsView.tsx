@@ -1114,6 +1114,70 @@ export default function SkillsView({
 }: SkillsViewProps) {
   
   const [showSkillsDiv, setShowSkillsDiv] = useState<boolean>(false);
+  const [sliderIndex, setSliderIndex] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const nextSlide = () => {
+    const len = softwareCategories.length;
+    if (len <= 1) return;
+    setSliderIndex((prev) => (prev + 1) % len);
+  };
+
+  const prevSlide = () => {
+    const len = softwareCategories.length;
+    if (len <= 1) return;
+    setSliderIndex((prev) => (prev - 1 + len) % len);
+  };
+
+  const getVisibleCategories = () => {
+    const len = softwareCategories.length;
+    if (len === 0) return [];
+    if (len === 1 || isMobile) {
+      return [softwareCategories[sliderIndex]];
+    }
+    return [
+      softwareCategories[sliderIndex],
+      softwareCategories[(sliderIndex + 1) % len]
+    ];
+  };
+
+  const dragStartRef = useRef<number | null>(null);
+  const isDraggingRef = useRef<boolean>(false);
+
+  const handleDragStart = (clientX: number) => {
+    dragStartRef.current = clientX;
+    isDraggingRef.current = true;
+  };
+
+  const handleDragMove = (clientX: number) => {
+    if (!isDraggingRef.current || dragStartRef.current === null) return;
+    const diff = clientX - dragStartRef.current;
+    
+    if (Math.abs(diff) > 70) {
+      if (diff > 0) {
+        prevSlide();
+      } else {
+        nextSlide();
+      }
+      dragStartRef.current = null;
+      isDraggingRef.current = false;
+    }
+  };
+
+  const handleDragEnd = () => {
+    isDraggingRef.current = false;
+    dragStartRef.current = null;
+  };
+
   const [categoryIndices, setCategoryIndices] = useState<Record<string, number>>({
     soft_1: 0,
     soft_2: 0,
@@ -1850,165 +1914,244 @@ export default function SkillsView({
 
       {/* 2. Software Categories Section */}
       <div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <h4 id="software-sistemas-subtitle" className="text-[17px] font-bold text-[#1a5f7a] uppercase tracking-wide flex items-center gap-2">
             <Laptop className="w-5 h-5 text-[#1a5f7a]" />
             Colección Software & Sistemas
           </h4>
-          {isEditing && (
-            <button
-              type="button"
-              onClick={onAddSoftwareCategory}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              Añadir Categoría
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {/* Elegant slider page indicators and control buttons in the header */}
+            {softwareCategories.length > (isMobile ? 1 : 2) && (
+              <div className="flex items-center gap-1.5 bg-gray-50/85 backdrop-blur-md border border-gray-200/60 p-1 rounded-xl shadow-2xs select-none">
+                <button
+                  type="button"
+                  onClick={prevSlide}
+                  className="w-7 h-7 rounded-lg hover:bg-white hover:shadow-3xs flex items-center justify-center text-gray-600 hover:text-gray-900 active:scale-95 transition-all cursor-pointer"
+                  title="Categoría anterior (Rotar izquierda)"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <span className="text-[10px] font-mono font-bold text-[#1a5f7a] px-2">
+                  {sliderIndex + 1} - {isMobile ? sliderIndex + 1 : ((sliderIndex + 1) % softwareCategories.length) + 1} de {softwareCategories.length}
+                </span>
+                <button
+                  type="button"
+                  onClick={nextSlide}
+                  className="w-7 h-7 rounded-lg hover:bg-white hover:shadow-3xs flex items-center justify-center text-gray-600 hover:text-gray-900 active:scale-95 transition-all cursor-pointer"
+                  title="Siguiente categoría (Rotar derecha)"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+            {isEditing && (
+              <button
+                type="button"
+                onClick={onAddSoftwareCategory}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all cursor-pointer shadow-3xs"
+              >
+                <Plus className="w-4 h-4" />
+                Añadir Categoría
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {softwareCategories.map((cat) => (
-            <AnimateIn 
-              key={cat.id}
-              type={cat.animation}
-              triggerKey={JSON.stringify(cat)}
-              className="relative group p-4 border border-gray-200 rounded-xl bg-white hover:border-gray-300 hover:shadow-xs transition-all duration-200 py-3 flex flex-col justify-between"
-            >
-              {isEditing && (
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditSoftwareCategory(cat);
-                  }}
-                  className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-xs z-20 cursor-pointer transition-all duration-200"
-                >
-                  <Edit3 className="w-3 h-3" /> Editar
-                </button>
-              )}
+        {/* Gallery container with drag/swipe support */}
+        <div 
+          className="relative px-1 select-none"
+          onMouseDown={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest('button') || target.closest('a') || target.closest('textarea') || target.closest('input')) return;
+            handleDragStart(e.clientX);
+          }}
+          onMouseMove={(e) => handleDragMove(e.clientX)}
+          onMouseUp={handleDragEnd}
+          onMouseLeave={handleDragEnd}
+          onTouchStart={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest('button') || target.closest('a') || target.closest('textarea') || target.closest('input')) return;
+            if (e.touches && e.touches[0]) handleDragStart(e.touches[0].clientX);
+          }}
+          onTouchMove={(e) => {
+            if (e.touches && e.touches[0]) handleDragMove(e.touches[0].clientX);
+          }}
+          onTouchEnd={handleDragEnd}
+        >
+          {/* Main Drag-to-rotate Grid Area */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 cursor-grab active:cursor-grabbing">
+            {getVisibleCategories().map((cat) => (
+              <AnimateIn 
+                key={cat.id}
+                type={cat.animation}
+                triggerKey={JSON.stringify(cat)}
+                className="relative group p-4 border border-gray-200 rounded-xl bg-white hover:border-gray-300 hover:shadow-xs transition-all duration-200 py-3 flex flex-col justify-between"
+              >
+                {isEditing && (
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditSoftwareCategory(cat);
+                    }}
+                    className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-xs z-20 cursor-pointer transition-all duration-200"
+                  >
+                    <Edit3 className="w-3 h-3" /> Editar
+                  </button>
+                )}
 
-              <div className="w-full flex flex-col h-full justify-between">
-                {/* 
-                  VISOR DE SCREENSHOTS DE PLATAFORMAS WEB (For any category with showcases)
-                */}
-                {CATEGORY_SHOWCASES[cat.id] && CATEGORY_SHOWCASES[cat.id].length > 0 && (
-                  <div id={`slider-${cat.id}`} className="mb-4">
-                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 flex items-center gap-1">
-                      <span className={`w-1.5 h-1.5 rounded-full ${getTheme(cat.id).bulletColor} animate-pulse`}></span>
-                      Galería de {cat.name}:
-                    </p>
-                    <div className="relative aspect-video w-full rounded-lg bg-slate-900 overflow-hidden border border-gray-200 group/slider shadow-inner">
-                      {/* Left sliding button */}
-                      <button 
-                        type="button"
-                        onClick={(e) => handlePrevSlide(e, cat.id)}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white z-20 cursor-pointer backdrop-blur-xs border border-white/10 opacity-80 group-hover/slider:opacity-100 transition-all shadow-xs"
-                      >
-                        <ChevronLeft className="w-5 h-5" />
-                      </button>
+                <div className="w-full flex flex-col h-full justify-between">
+                  {/* 
+                    VISOR DE SCREENSHOTS DE PLATAFORMAS WEB (For any category with showcases)
+                  */}
+                  {CATEGORY_SHOWCASES[cat.id] && CATEGORY_SHOWCASES[cat.id].length > 0 && (
+                    <div id={`slider-${cat.id}`} className="mb-4">
+                      <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                        <span className={`w-1.5 h-1.5 rounded-full ${getTheme(cat.id).bulletColor} animate-pulse`}></span>
+                        Galería de {cat.name}:
+                      </p>
+                      <div className="relative aspect-video w-full rounded-lg bg-slate-900 overflow-hidden border border-gray-200 group/slider shadow-inner">
+                        {/* Left sliding button */}
+                        <button 
+                          type="button"
+                          onClick={(e) => handlePrevSlide(e, cat.id)}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white z-20 cursor-pointer backdrop-blur-xs border border-white/10 opacity-80 group-hover/slider:opacity-100 transition-all shadow-xs"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
 
-                      {/* Web Screenshot viewer area */}
-                      <div 
-                        onClick={() => {
-                          const idx = categoryIndices[cat.id] || 0;
-                          const site = CATEGORY_SHOWCASES[cat.id][idx];
-                          setActivePopupSite(site);
-                        }}
-                        className="w-full h-full cursor-zoom-in group/img relative"
-                        title="Ver de manera emergente"
-                      >
-                        <img 
-                          src={CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.image} 
-                          alt={`Screenshot of ${CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.name}`}
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover select-none transition-transform duration-500 group-hover/img:scale-103"
-                        />
-                        {/* Interactive overlay on hover */}
-                        <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 z-10 flex flex-col justify-end p-3 text-white">
-                          <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                            <span className={`inline-flex items-center gap-1 text-[11px] ${getTheme(cat.id).badgeBgActive} font-bold px-2 py-0.5 rounded-full self-start shadow-sm`}>
-                              <ExternalLink className="w-3 h-3" /> Abrir emergente
-                            </span>
+                        {/* Web Screenshot viewer area */}
+                        <div 
+                          onClick={() => {
+                            const idx = categoryIndices[cat.id] || 0;
+                            const site = CATEGORY_SHOWCASES[cat.id][idx];
+                            setActivePopupSite(site);
+                          }}
+                          className="w-full h-full cursor-zoom-in group/img relative"
+                          title="Ver de manera emergente"
+                        >
+                          <img 
+                            src={CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.image} 
+                            alt={`Screenshot of ${CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.name}`}
+                            referrerPolicy="no-referrer"
+                            className="w-full h-full object-cover select-none transition-transform duration-500 group-hover/img:scale-103"
+                          />
+                          {/* Interactive overlay on hover */}
+                          <div className="absolute inset-0 bg-black/45 opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 z-10 flex flex-col justify-end p-3 text-white">
+                            <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                              <span className={`inline-flex items-center gap-1 text-[11px] ${getTheme(cat.id).badgeBgActive} font-bold px-2 py-0.5 rounded-full self-start shadow-sm`}>
+                                <ExternalLink className="w-3 h-3" /> Abrir emergente
+                              </span>
+                              <a 
+                                href={CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-1 text-[11px] bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-0.5 rounded-full cursor-pointer transition-all shadow-sm"
+                              >
+                                Visitar sitio real <ArrowUpRight className="w-3 h-3" />
+                              </a>
+                            </div>
+                            <p className="text-[11px] line-clamp-2 opacity-95 text-gray-100">
+                              {CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.desc}
+                            </p>
+                          </div>
+                          {/* URL and quick visit badges always active in the slider corners */}
+                          <div className="absolute top-2 left-2 z-20 flex gap-2">
                             <a 
                               href={CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.url}
                               target="_blank"
                               rel="noreferrer"
                               onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 text-[11px] bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-0.5 rounded-full cursor-pointer transition-all shadow-sm"
+                              className="inline-flex items-center gap-1 text-[10px] font-bold bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-0.7 rounded-md cursor-pointer transition-all shadow-md select-none border border-blue-500/10"
                             >
-                              Visitar sitio real <ArrowUpRight className="w-3 h-3" />
+                              Visitar <ArrowUpRight className="w-3 h-3" />
                             </a>
                           </div>
-                          <p className="text-[11px] line-clamp-2 opacity-95 text-gray-100">
-                            {CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.desc}
-                          </p>
+                          <div className="absolute top-2 right-2 bg-black/65 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded-md select-none border border-white/10 pointer-events-none z-10">
+                            {CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.name.toLowerCase()}
+                          </div>
                         </div>
-                        {/* URL and quick visit badges always active in the slider corners */}
-                        <div className="absolute top-2 left-2 z-20 flex gap-2">
-                          <a 
-                            href={CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1 text-[10px] font-bold bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-0.7 rounded-md cursor-pointer transition-all shadow-md select-none border border-blue-500/10"
-                          >
-                            Visitar <ArrowUpRight className="w-3 h-3" />
-                          </a>
-                        </div>
-                        <div className="absolute top-2 right-2 bg-black/65 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded-md select-none border border-white/10 pointer-events-none z-10">
-                          {CATEGORY_SHOWCASES[cat.id][categoryIndices[cat.id] || 0]?.name.toLowerCase()}
-                        </div>
-                      </div>
 
-                      {/* Right sliding button */}
-                      <button 
-                        type="button"
-                        onClick={(e) => handleNextSlide(e, cat.id)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white z-20 cursor-pointer backdrop-blur-xs border border-white/10 opacity-80 group-hover/slider:opacity-100 transition-all shadow-xs"
-                      >
-                        <ChevronRight className="w-5 h-5" />
-                      </button>
+                        {/* Right sliding button */}
+                        <button 
+                          type="button"
+                          onClick={(e) => handleNextSlide(e, cat.id)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 text-white z-20 cursor-pointer backdrop-blur-xs border border-white/10 opacity-80 group-hover/slider:opacity-100 transition-all shadow-xs"
+                        >
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
 
-                      {/* Slide Info & indicator dots inside the bar */}
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/50 backdrop-blur-xs px-2 py-1 rounded-full z-10">
-                        {CATEGORY_SHOWCASES[cat.id].map((_, dotIdx) => (
-                          <button
-                            key={dotIdx}
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCategoryIndices(prev => ({
-                                ...prev,
-                                [cat.id]: dotIdx
-                              }));
-                            }}
-                            className={`w-1.5 h-1.5 rounded-full transition-all cursor-pointer ${
-                              (categoryIndices[cat.id] || 0) === dotIdx 
-                                ? 'bg-blue-400 scale-125' 
-                                : 'bg-white/40 hover:bg-white/70'
-                            }`}
-                          />
-                        ))}
+                        {/* Slide Info & indicator dots inside the bar */}
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/50 backdrop-blur-xs px-2 py-1 rounded-full z-10">
+                          {CATEGORY_SHOWCASES[cat.id].map((_, dotIdx) => (
+                            <button
+                              key={dotIdx}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCategoryIndices(prev => ({
+                                  ...prev,
+                                  [cat.id]: dotIdx
+                                }));
+                              }}
+                              className={`w-1.5 h-1.5 rounded-full transition-all cursor-pointer ${
+                                (categoryIndices[cat.id] || 0) === dotIdx 
+                                  ? 'bg-blue-400 scale-125' 
+                                  : 'bg-white/40 hover:bg-white/70'
+                              }`}
+                            />
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div>
-                  <span className="font-bold text-gray-900 text-sm block border-b pb-1 mb-1.5 uppercase text-xs tracking-wider flex items-center gap-1">
-                    <Laptop className={`w-3.5 h-3.5 ${getTheme(cat.id).iconClassName}`} />
-                    {cat.name}
-                  </span>
-                  {renderSoftwareBadges(cat.tools, !!CATEGORY_SHOWCASES[cat.id], cat.id)}
+                  <div>
+                    <span className="font-bold text-gray-900 text-sm block border-b pb-1 mb-1.5 uppercase text-xs tracking-wider flex items-center gap-1">
+                      <Laptop className={`w-3.5 h-3.5 ${getTheme(cat.id).iconClassName}`} />
+                      {cat.name}
+                    </span>
+                    {renderSoftwareBadges(cat.tools, !!CATEGORY_SHOWCASES[cat.id], cat.id)}
+                  </div>
                 </div>
-              </div>
-            </AnimateIn>
-          ))}
-          
-          {softwareCategories.length === 0 && (
-            <p className="text-center text-sm text-gray-400 py-6 italic md:col-span-2">No hay categorías de software agregadas.</p>
+              </AnimateIn>
+            ))}
+            
+            {softwareCategories.length === 0 && (
+              <p className="text-center text-sm text-gray-400 py-6 italic md:col-span-2">No hay categorías de software agregadas.</p>
+            )}
+          </div>
+
+          {/* Floating Left & Right persistent navigation arrows for the whole categories gallery */}
+          {softwareCategories.length > (isMobile ? 1 : 2) && (
+            <>
+              <button
+                type="button"
+                onClick={prevSlide}
+                className="absolute left-[-14px] md:left-[-22px] top-1/2 -translate-y-1/2 w-9 h-9 md:w-11 md:h-11 rounded-full border border-gray-150 bg-white/95 hover:bg-white text-gray-600 hover:text-[#1a5f7a] flex items-center justify-center shadow-lg active:scale-95 hover:scale-103 transition-all cursor-pointer z-35"
+                title="Categoría anterior"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={nextSlide}
+                className="absolute right-[-14px] md:right-[-22px] top-1/2 -translate-y-1/2 w-9 h-9 md:w-11 md:h-11 rounded-full border border-gray-150 bg-white/95 hover:bg-white text-gray-600 hover:text-[#1a5f7a] flex items-center justify-center shadow-lg active:scale-95 hover:scale-103 transition-all cursor-pointer z-35"
+                title="Siguiente categoría"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </>
           )}
         </div>
+
+        {/* Swipe instructions banner */}
+        {softwareCategories.length > (isMobile ? 1 : 2) && (
+          <div className="text-center mt-3.5 text-[10.5px] font-bold text-gray-400 select-none flex items-center justify-center gap-1">
+            <Sparkles className="w-3 h-3 text-emerald-500 animate-pulse" />
+            <span>Arrastra horizontalmente con el cursor o usa los botones para navegar</span>
+          </div>
+        )}
       </div>
 
       {/* 
