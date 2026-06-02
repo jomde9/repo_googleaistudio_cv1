@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Edit, Eye, Smartphone, Layout, HelpCircle, GraduationCap, ArrowUpRight, Check, AlertCircle, RefreshCw, Upload, RotateCcw, ChevronDown, ChevronUp, Settings } from 'lucide-react';
+import { Sparkles, Edit, Eye, Smartphone, Layout, HelpCircle, GraduationCap, ArrowUpRight, Check, AlertCircle, RefreshCw, Upload, RotateCcw, ChevronDown, ChevronUp, Settings, Lock } from 'lucide-react';
 
 // Subcomponents
 import HeaderView from './components/HeaderView';
@@ -35,6 +35,9 @@ interface EditState {
 export default function App() {
   const [cvData, setCvData] = useState<CVData>(initialCVData);
   const [isEditingMode, setIsEditingMode] = useState<boolean>(false); // Start in visualizer/preview mode by default!
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState<boolean>(false);
+  const [passwordInput, setPasswordInput] = useState<string>('');
+  const [passwordError, setPasswordError] = useState<string>('');
   const [activeTheme, setActiveTheme] = useState<ActiveTheme>('frostedGlass');
   const [editingItem, setEditingItem] = useState<EditState | null>(null);
   const [toastMessage, setToastMessage] = useState<string>('');
@@ -43,6 +46,17 @@ export default function App() {
   
   // Trigger animations reload key
   const [animationTriggerKey, setAnimationTriggerKey] = useState<number>(0);
+
+  const handleVerifyPassword = () => {
+    if (passwordInput === "Cesareo2019") {
+      setIsEditingMode(true);
+      setShowPasswordPrompt(false);
+      setPasswordError('');
+      triggerToast('¡Modo Editor activado correctamente! ✏');
+    } else {
+      setPasswordError('Contraseña incorrecta. Inténtelo de nuevo.');
+    }
+  };
 
   // Load from localStorage
   useEffect(() => {
@@ -599,7 +613,7 @@ export default function App() {
         >
           {/* Subtle overlay decorative watermark for print-like feel on desktop */}
           <div className="absolute top-0 right-0 p-4 font-mono text-[10px] text-gray-300 opacity-50 block uppercase print:hidden">
-            Documento de Ingeniería Electrónica
+            Curriculum Vitae Interactivo
           </div>
 
           {/* Sub Header Section */}
@@ -645,7 +659,7 @@ export default function App() {
           />
 
           {/* Footer of the CV */}
-          <footer className="mt-8 pt-6 border-t border-gray-150 text-center text-xs text-gray-400">
+          <footer className="mt-8 pt-6 border-t border-gray-150 text-center text-xs text-gray-400 hidden print:block">
             <p className="font-semibold">{cvData.personalInfo.fullName} — {cvData.personalInfo.title}</p>
             <p className="mt-1">Página Web Interactiva — Autogenerada a partir de Hoja de Vida Original</p>
           </footer>
@@ -656,23 +670,112 @@ export default function App() {
       <div className="max-w-4xl mx-auto px-4 mt-6">
         <CVExporter
           currentData={cvData}
-          onImportData={saveCVState}
-          onResetData={() => {
-            setCvData(initialCVData);
-            localStorage.setItem('esqueda_cv_data', JSON.stringify(initialCVData));
-            triggerToast('Currículum restaurado a valores por defecto');
-          }}
+          activeTheme={activeTheme}
+          setActiveTheme={setActiveTheme}
+          onReloadEffects={triggerReloadAnimations}
         />
       </div>
 
       {/* 5. Sección de Edición (Collapsible, Hidden during print) */}
       <div className="max-w-4xl mx-auto px-4 mt-6 print:hidden">
         <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xs">
+          {/* Contenido colapsable */}
+          {showEditionPanel && (
+            <div className="p-5 bg-slate-50/50">
+              {/* 1. Modo de Vista */}
+              <div className="space-y-2 max-w-lg">
+                <span className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  Modo de Visualización
+                </span>
+                <div className="flex bg-white p-1 rounded-xl border border-gray-200 shadow-xs inline-flex gap-1 font-sans">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isEditingMode) return;
+                      setShowPasswordPrompt(!showPasswordPrompt);
+                      setPasswordInput('');
+                      setPasswordError('');
+                    }}
+                    className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg cursor-pointer transition-all ${
+                      isEditingMode
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Edit className="w-3.5 h-3.5" />
+                    Modo Editor
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEditingMode(false);
+                      setShowPasswordPrompt(false);
+                    }}
+                    className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg cursor-pointer transition-all ${
+                      !isEditingMode
+                        ? 'bg-emerald-600 text-white shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    Vista previa
+                  </button>
+                </div>
+
+                {showPasswordPrompt && !isEditingMode && (
+                  <div className="mt-3 p-3.5 bg-indigo-50/70 border border-indigo-200 rounded-2xl space-y-2.5 max-w-sm transition-all animate-in fade-in slide-in-from-top-1 px-4 py-3.5">
+                    <div className="flex items-center gap-1.5 text-xs text-indigo-950 font-bold">
+                      <Lock className="w-4 h-4 text-indigo-600 animate-pulse" />
+                      <span>Se requiere contraseña de administrador</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="password"
+                        placeholder="Contraseña"
+                        value={passwordInput}
+                        onChange={(e) => {
+                          setPasswordInput(e.target.value);
+                          setPasswordError('');
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleVerifyPassword();
+                          }
+                        }}
+                        className="flex-1 px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        onClick={handleVerifyPassword}
+                        className="px-4 py-1.5 bg-indigo-650 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer transition-all active:scale-95 shadow-3xs"
+                      >
+                        Entrar
+                      </button>
+                    </div>
+                    {passwordError && (
+                      <p className="text-[11px] text-red-650 font-semibold flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+                        {passwordError}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <p className="text-[11px] text-gray-550 leading-normal">
+                  Active el modo editor para modificar textos, fotos y enlaces, o vista previa para ver el diseño final como se publicará.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Título de la sección como botón para expandir/colapsar */}
           <button
             type="button"
             onClick={() => setShowEditionPanel(!showEditionPanel)}
-            className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100/80 active:bg-gray-100 transition-all font-bold text-gray-800 cursor-pointer text-sm"
+            className={`w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100/80 active:bg-gray-100 transition-all font-bold text-gray-800 cursor-pointer text-sm ${
+              showEditionPanel ? 'border-t border-gray-150' : ''
+            }`}
           >
             <div className="flex items-center gap-2 text-indigo-650">
               <Settings className="w-4 h-4 text-indigo-600" />
@@ -684,152 +787,11 @@ export default function App() {
             </div>
           </button>
 
-          {/* Contenido colapsable */}
-          {showEditionPanel && (
-            <div className="p-5 border-t border-gray-150 bg-slate-50/50 space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {/* 1. Modo de Vista */}
-                <div className="space-y-2">
-                  <span className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
-                    Modo de Visualización
-                  </span>
-                  <div className="flex bg-white p-1 rounded-xl border border-gray-200 shadow-xs inline-flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setIsEditingMode(true)}
-                      className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        isEditingMode
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                      }`}
-                    >
-                      <Edit className="w-3.5 h-3.5" />
-                      Modo Editor
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsEditingMode(false)}
-                      className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        !isEditingMode
-                          ? 'bg-emerald-600 text-white shadow-sm'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                      }`}
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      Vista previa
-                    </button>
-                  </div>
-                  <p className="text-[11px] text-gray-550 leading-normal">
-                    Active el modo editor para modificar textos, fotos y enlaces, o vista previa para ver el diseño final como se publicará.
-                  </p>
-                </div>
-
-                {/* 2. Temas Visuales */}
-                <div className="space-y-2">
-                  <span className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
-                    Personalización del Tema
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setActiveTheme('frostedGlass')}
-                      className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        activeTheme === 'frostedGlass'
-                          ? 'bg-indigo-600 text-white shadow-sm'
-                          : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      Efecto Cristal 💎
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTheme('original')}
-                      className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        activeTheme === 'original'
-                          ? 'bg-[#1a5f7a] text-white shadow-sm'
-                          : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      Clásico Documental
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTheme('techDark')}
-                      className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        activeTheme === 'techDark'
-                          ? 'bg-slate-800 text-cyan-400 shadow-sm border border-slate-700'
-                          : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      Cibernético Oscuro
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTheme('editorialEmerald')}
-                      className={`px-3 py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        activeTheme === 'editorialEmerald'
-                          ? 'bg-emerald-700 text-white shadow-sm'
-                          : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      Esmeralda Orgánico
-                    </button>
-                  </div>
-                  <p className="text-[11px] text-gray-550 leading-normal">
-                    Cambie toda la paleta cromática de fondo y tipografía de este currículum interactivo.
-                  </p>
-                </div>
-              </div>
-
-              {/* Fila inferior: Importar, Restaurar, Recargar Animaciones */}
-              <div className="border-t border-gray-200 pt-4 space-y-2">
-                <span className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
-                  Mantenimiento de Archivos y Animaciones
-                </span>
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-xs rounded-xl shadow-xs cursor-pointer transition-all"
-                  >
-                    <Upload className="w-4 h-4 text-gray-500" />
-                    Importar Currículum (JSON)
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (confirm('¿Desea restaurar todos los datos originales del curriculum de José Manuel Díaz Esqueda? Esto borrará sus cambios locales.')) {
-                        setCvData(initialCVData);
-                        localStorage.setItem('esqueda_cv_data', JSON.stringify(initialCVData));
-                        triggerToast('Currículum restaurado a valores por defecto');
-                      }
-                    }}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs rounded-xl border border-red-200 cursor-pointer transition-all"
-                  >
-                    <RotateCcw className="w-4 h-4 text-red-500" />
-                    Restaurar Datos de Origen
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={triggerReloadAnimations}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-600 text-gray-700 font-bold text-xs rounded-xl shadow-xs cursor-pointer transition-all"
-                  >
-                    <RefreshCw className="w-4 h-4 text-gray-500" />
-                    Recargar Efectos Visuales
-                  </button>
-                </div>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  accept=".json"
-                  onChange={handleImportJSONApp}
-                  className="hidden"
-                />
-              </div>
-            </div>
-          )}
+          {/* Footer of the CV for screen web preview */}
+          <footer className="py-6 border-t border-gray-150 text-center text-xs text-gray-400 bg-gray-50/50">
+            <p className="font-semibold">{cvData.personalInfo.fullName} — {cvData.personalInfo.title}</p>
+            <p className="mt-1">Curriculum Vitae Interactivo</p>
+          </footer>
         </div>
       </div>
 
