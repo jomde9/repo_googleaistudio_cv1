@@ -38,10 +38,6 @@ export default function CVExporter({
     URL.revokeObjectURL(url);
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <div id="cv-exporter-panel" className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xs space-y-5 print:hidden">
       {/* 1. Personalización de Diseño y Efectos */}
@@ -127,15 +123,17 @@ export default function CVExporter({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-          {/* Print Button */}
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-linear-to-r from-blue-600 to-indigo-650 hover:from-blue-700 hover:to-indigo-750 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer transition-all hover:scale-[1.01]"
+          {/* Print Button (Links to static PDF) */}
+          <a
+            href="/assets/Curriculum_Vitae_Jose_Manuel_Diaz_Esqueda.pdf"
+            download="Curriculum_Vitae_Jose_Manuel_Diaz_Esqueda.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-linear-to-r from-blue-600 to-indigo-650 hover:from-blue-700 hover:to-indigo-750 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer transition-all hover:scale-[1.01] text-center"
           >
             <Printer className="w-4 h-4" />
             Imprimir / Guardar en PDF
-          </button>
+          </a>
 
           {/* Export JSON Button */}
           <button
